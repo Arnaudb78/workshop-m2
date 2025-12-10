@@ -8,8 +8,12 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { CreateAccountAction } from "../actions/create-account.action";
 import { AccessLevelEnum } from "@/utils/types/account"
+import { useRouter } from "next/navigation"
 
 export default function NewAccount() {
+
+    const router = useRouter();
+
     const [form, setForm] = useState({
         name: "",
         lastname: "",
@@ -27,21 +31,23 @@ export default function NewAccount() {
     };
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const payload = {
-            name: form.name,
-            lastname: form.lastname,
-            mail: form.mail,
-            password: form.password,
-            accessLevel: form.accessLevel,
-        };
-        const result = await CreateAccountAction(payload);
+      event.preventDefault();
+      const payload = {
+          name: form.name,
+          lastname: form.lastname,
+          mail: form.mail,
+          password: form.password,
+          accessLevel: form.accessLevel,
+      };
+      const result = await CreateAccountAction(payload);
 
-        if(result.success === false) {
-          console.log(result.success, result.message);
-        };
+      if(result.success === false) {
+        console.log(result.success, result.message);
+      };
 
-        console.log(result.data);
+      if(result.success === true && result.pahtParams) {
+        router.push(result.pahtParams);
+      };
     };
 
     return (

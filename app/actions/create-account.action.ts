@@ -34,6 +34,7 @@ export async function CreateAccountAction(payload: CreateAccountPayload) {
         return {
             success: true,
             data: created,
+            pahtParams: "/dashboard"
         };
     } catch (error) {
         console.error("[CreateAccountAction] error creating account", error);
