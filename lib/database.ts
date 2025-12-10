@@ -7,32 +7,30 @@ const globalForMongoose = globalThis as typeof globalThis & {
   };
 };
 
-if (!process.env.MONGO_DB_CONNECTION_STRING) {
-  throw new Error(
-    "Missing MONGO_DB_CONNECTION_STRING. Add it to your .env.local file."
-  );
+const connectionString = process.env.MONGO_DB_CONNECTION_STRING ?? process.env.MONGODB_URI;
+if (!connectionString) {
+    throw new Error("Missing Mongo connection string. Set MONGO_DB_CONNECTION_STRING (or MONGODB_URI) in your env.");
 }
-
-const connectionString = process.env.MONGO_DB_CONNECTION_STRING;
+const MONGO_URI: string = connectionString;
 
 const cached = globalForMongoose.mongoose ?? {
-  conn: null,
-  promise: null,
+    conn: null,
+    promise: null,
 };
 
 globalForMongoose.mongoose = cached;
 
 export async function connectToDatabase() {
-  if (cached.conn) {
+    if (cached.conn) {
+        return cached.conn;
+    }
+
+    if (!cached.promise) {
+        cached.promise = mongoose.connect(MONGO_URI, {
+            bufferCommands: false,
+        });
+    }
+
+    cached.conn = await cached.promise;
     return cached.conn;
-  }
-
-  if (!cached.promise) {
-    cached.promise = mongoose.connect(connectionString, {
-      bufferCommands: false,
-    });
-  }
-
-  cached.conn = await cached.promise;
-  return cached.conn;
 }
