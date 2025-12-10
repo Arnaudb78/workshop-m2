@@ -11,6 +11,7 @@ export default function NewAccount() {
   const [form, setForm] = useState({
     name: "",
     lastname: "",
+    mail: "",
     password: "",
     accessLevel: "STUDENT",
   })
@@ -54,6 +55,18 @@ export default function NewAccount() {
                 name="lastname"
                 value={form.lastname}
                 onChange={handleChange("lastname")}
+                placeholder="Doe"
+                required
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="mail">Nom</Label>
+              <Input
+                id="mail"
+                name="mail"
+                value={form.mail}
+                onChange={handleChange("mail")}
                 placeholder="Doe"
                 required
               />

@@ -4,6 +4,7 @@ const AccountSchema = new Schema({
     accountId: Schema.ObjectId,
     name: String,
     lastname: String,
+    mail: String,
     password: String,
     accessLevel: {
         type: String,
