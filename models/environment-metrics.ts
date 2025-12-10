@@ -1,4 +1,3 @@
-import { timeStamp } from "console";
 import mongoose, { Schema } from "mongoose";
 
 const EnvironmentMetricsSchema = new Schema({
@@ -26,13 +25,13 @@ const EnvironmentMetricsSchema = new Schema({
             enum: ["dB", "dBA", "dBC", "dBSPL"],
         },
     },
-    refreshAt: timeStamp,
+    refreshAt: { type: Date, default: Date.now },
     sensorId: Schema.ObjectId,
     comfortLevel: {
         type: String,
         enum: ["REALLY_GOOD", "GOOD", "BAD", "REALLY_BAD"],
     },
     needVentilation: Boolean,
-})
+});
 
 export default mongoose.model("EnvironmentMetrics", EnvironmentMetricsSchema);
