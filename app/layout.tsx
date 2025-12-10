@@ -24,19 +24,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-         <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
-      </body>
-    </html>
+      <html lang="fr" suppressHydrationWarning>
+          <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} cz-shortcut-listen="true">
+              <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+                  {children}
+              </ThemeProvider>
+          </body>
+      </html>
   );
 }

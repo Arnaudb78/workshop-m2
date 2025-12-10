@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, models } from "mongoose";
 
 const AccountSchema = new Schema({
     accountId: Schema.ObjectId,
@@ -12,4 +12,4 @@ const AccountSchema = new Schema({
     },
 });
 
-export default mongoose.model("Account", AccountSchema);
+export default models.Account || mongoose.model("Account", AccountSchema);
