@@ -61,7 +61,7 @@ export default function NewAccount() {
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="mail">Nom</Label>
+              <Label htmlFor="mail">Mail</Label>
               <Input
                 id="mail"
                 name="mail"
