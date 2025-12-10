@@ -4,7 +4,7 @@ import { connectToDatabase } from "@/lib/database";
 import { CreateAccountValition } from "@/utils/validations/create-account.validation";
 import Account from "@/models/account";
 import { CreateAccountPayload } from "@/utils/types/account";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export async function CreateAccountAction(payload: CreateAccountPayload) {
     const validation = CreateAccountValition.safeParse(payload);
