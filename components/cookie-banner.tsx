@@ -13,10 +13,8 @@ export default function CookieBanner() {
 
     useEffect(() => {
         setMounted(true);
-        // Vérifier si le consentement a déjà été donné
         const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
         if (!consent) {
-            // Afficher le bandeau après un court délai pour une meilleure UX
             setTimeout(() => {
                 setShowBanner(true);
             }, 1000);
