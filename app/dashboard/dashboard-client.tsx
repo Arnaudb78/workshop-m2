@@ -24,6 +24,7 @@ import { usePathname } from "next/navigation";
 
 import { AccountCookie } from "@/lib/auth";
 import { LogoutAction } from "../actions/logout.action";
+import { ModeToggle } from "@/components/toggle-mode";
 
 type Props = {
     account: AccountCookie;
@@ -89,7 +90,7 @@ export default function DashboardClient({ account, children, title = "Dashboard"
                 </SidebarContent>
 
                 <SidebarFooter>
-                    <Button variant="outline" size="sm" className="w-full justify-center" onClick={handleLogout}>
+                    <Button variant="destructive" size="sm" className="w-full justify-center" onClick={handleLogout}>
                         Déconnexion
                     </Button>
                 </SidebarFooter>
@@ -99,9 +100,10 @@ export default function DashboardClient({ account, children, title = "Dashboard"
                 <header className="flex h-14 items-center gap-3 border-b px-4">
                     <SidebarTrigger />
                     <Separator orientation="vertical" className="h-6" />
-                    <div className="flex flex-col">
+                    <div className="w-full flex justify-between items-center">
                         <span className="text-sm font-semibold">{title}</span>
                         {description && <span className="text-xs text-muted-foreground">{description}</span>}
+                        <ModeToggle/>
                     </div>
                 </header>
 
