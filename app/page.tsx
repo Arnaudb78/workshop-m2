@@ -203,7 +203,7 @@ export default function Home() {
                             <div className="flex justify-center mb-4">
                                 <div className="relative size-32 rounded-full bg-muted flex items-center justify-center overflow-hidden">
                                     <Image
-                                        src="/elena.png"
+                                        src="/el.png"
                                         alt="Elena Ferreira"
                                         width={128}
                                         height={128}

@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { AirVent, Home, School, Settings, Users } from "lucide-react";
+import { AirVent, Home, MessageSquare, School, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -44,7 +44,7 @@ export default function DashboardClient({ account, children, title = "Dashboard"
         { href: "/dashboard/rooms", icon: School, label: "Pièces" },
         { href: "/dashboard/sensors", icon: AirVent, label: "Capteurs" },
         { href: "/dashboard/students", icon: Users, label: "Étudiants" },
-        { href: "/dashboard/settings", icon: Settings, label: "Paramètres" },
+        { href: "/dashboard/support", icon: MessageSquare, label: "Support" },
     ];
 
     return (

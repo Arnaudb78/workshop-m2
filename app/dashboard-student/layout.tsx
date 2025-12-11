@@ -17,6 +17,10 @@ export default async function DashboardStudentLayout({
     redirect("/dashboard");
   }
 
-  return <DashboardStudentClient account={account}>{children}</DashboardStudentClient>;
+  return (
+      <DashboardStudentClient account={account} title="Dashboard Étudiant">
+          {children}
+      </DashboardStudentClient>
+  );
 }
 
