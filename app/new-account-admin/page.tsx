@@ -80,7 +80,7 @@ export default function NewAccountAdmin() {
             <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
                 <div className="w-full flex h-16 items-center justify-between px-4 mx-auto">
                     <div className="flex items-center gap-2">
-                        {mounted && <Image src={logoSrc} alt="DC Metrics Logo" width={120} height={40} className="h-10 w-auto" priority />}
+                        {mounted && <Link href="/"><Image src={logoSrc} alt="DC Metrics Logo" width={120} height={40} className="h-10 w-auto" priority /></Link>}
                     </div>
                     <div className="flex items-center gap-4">
                         <ModeToggle />
