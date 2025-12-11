@@ -1,8 +1,10 @@
 import GlobalMetrics from "./global-metrics";
+import AnalyticsCards from "./analytics-cards";
 
 export default async function DashboardPage() {
     return (
         <div className="space-y-6">
+            <AnalyticsCards />
             <GlobalMetrics />
             <div className="grid gap-6 lg:grid-cols-3">
                 <section className="col-span-2 rounded-lg border bg-card p-4 shadow-sm">

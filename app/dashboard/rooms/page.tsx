@@ -3,12 +3,14 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardAction } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter } from "@/components/ui/drawer";
 import { Trash2, Plus, Minus } from "lucide-react";
 import CreateRoomForm from "./create-room-form";
 import { UpdateAcceptableValuesRoomAction } from "@/app/actions/update-acceptable-values-room.action";
+import { DeleteRoomAction } from "@/app/actions/delete-room.action";
 
 type Room = {
     _id: string;
@@ -45,6 +47,7 @@ export default function Rooms() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     const fetchRooms = async () => {
         try {
@@ -75,10 +78,32 @@ export default function Rooms() {
         fetchRooms();
     };
 
-    const handleDestruct = (e: React.MouseEvent, room: Room) => {
-        e.stopPropagation(); // Empêcher l'ouverture du drawer
-        // TODO: Implémenter la suppression
-        console.log("Supprimer room:", room._id);
+    const handleDestruct = async (e: React.MouseEvent, room: Room) => {
+        e.stopPropagation();
+
+        if (!confirm(`Êtes-vous sûr de vouloir supprimer la pièce "${room.name || "sans nom"}" ?`)) {
+            return;
+        }
+
+        setDeleting(true);
+        setError(null);
+
+        try {
+            const result = await DeleteRoomAction({ roomId: room._id });
+
+            if (result.success) {
+                await fetchRooms();
+                setDrawerOpen(false);
+                setSelectedRoom(null);
+            } else {
+                setError(result.message || "Erreur lors de la suppression");
+            }
+        } catch (err) {
+            console.error("[Rooms] error deleting room", err);
+            setError("Une erreur est survenue lors de la suppression.");
+        } finally {
+            setDeleting(false);
+        }
     };
 
     const handleCardClick = (room: Room) => {
@@ -221,11 +246,15 @@ export default function Rooms() {
                             <Card key={room._id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => handleCardClick(room)}>
                                 <CardHeader>
                                     <CardTitle>{room.name || "Pièce sans nom"}</CardTitle>
-                                    {room.isUsed && (
-                                        <span className="text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-2 py-1 rounded w-fit">
-                                            Utilisée
-                                        </span>
-                                    )}
+                                    <Badge
+                                        variant={room.isUsed ? "destructive" : "default"}
+                                        className={
+                                            room.isUsed
+                                                ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 border-red-200 dark:border-red-800"
+                                                : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 border-green-200 dark:border-green-800"
+                                        }>
+                                        {room.isUsed ? "Occupé" : "Disponible"}
+                                    </Badge>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="space-y-1 text-sm text-muted-foreground">
@@ -287,9 +316,9 @@ export default function Rooms() {
                                     variant="destructive"
                                     className="w-full sm:w-auto"
                                     onClick={(e) => handleDestruct(e, selectedRoom)}
-                                    disabled={saving}>
+                                    disabled={saving || deleting}>
                                     <Trash2 className="h-4 w-4 mr-2" />
-                                    Supprimer
+                                    {deleting ? "Suppression..." : "Supprimer"}
                                 </Button>
                                 <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto sm:ml-auto">
                                     {saving ? "Enregistrement..." : "Enregistrer"}
