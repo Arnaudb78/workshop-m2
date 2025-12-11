@@ -15,7 +15,6 @@ export async function POST(request: Request) {
         await connectToDatabase();
 
         const saveData = await environmentMetrics.create({
-            // roomId?
             sensorRef: payload.sensorRef, 
             humidity: {
                 humidityNumber: payload?.humidity?.humidityNumber,
@@ -27,15 +26,10 @@ export async function POST(request: Request) {
             },
             sound: {
                 decibel: payload?.sound?.decibel,
-                // acceptableDecibelNumber: payload?.sound?.acceptableDecibelNumber,
                 unit: payload?.sound?.unit || "dB",
             },
             co2: payload?.co2,
-            // TODO: acceptableCO2Number
             refreshAt: new Date(),
-            // sensorId: new Types.ObjectId(payload.sensorId),
-            // comfortLevel: payload?.comfortLevel,
-            // needVentilation: payload?.needVentilation ?? false,
         });
 
         return NextResponse.json({ saveData }, { status: 200 });

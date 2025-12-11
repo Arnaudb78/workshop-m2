@@ -43,7 +43,7 @@ export default function DashboardClient({ account, children, title = "Dashboard"
         { href: "/dashboard", icon: Home, label: "Accueil" },
         { href: "/dashboard/rooms", icon: School, label: "Pièces" },
         { href: "/dashboard/metrics", icon: LineChart, label: "Mesures" },
-        { href: "/dashboard/users", icon: Users, label: "Utilisateurs" },
+        { href: "/dashboard/students", icon: Users, label: "Étudiants" },
         { href: "/dashboard/settings", icon: Settings, label: "Paramètres" },
     ];
 

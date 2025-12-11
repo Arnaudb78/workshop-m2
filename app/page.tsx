@@ -31,10 +31,10 @@ export default function Home() {
                     <div className="flex items-center gap-4">
                         <ModeToggle />
                         <Button variant="ghost" asChild>
-                            <Link href="/login">Connexion</Link>
+                            <Link href="/login">Étudiant</Link>
                         </Button>
                         <Button asChild>
-                            <Link href="/new-account">Inscription</Link>
+                            <Link href="/login-admin">Administrateur</Link>
                         </Button>
                     </div>
                 </div>
@@ -159,6 +159,64 @@ export default function Home() {
                                     </div>
                                 </div>
                             </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            </section>
+
+            {/* Team Section */}
+            <section className="w-full py-20 md:py-32">
+                <div className="mx-auto flex max-w-232 flex-col items-center justify-center gap-4 text-center px-4">
+                    <h2 className="text-3xl font-bold leading-[1.1] sm:text-3xl md:text-4xl">L&apos;équipe</h2>
+                    <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">Les créateurs du concept DC Metrics</p>
+                </div>
+
+                <div className="mx-auto grid justify-center gap-6 sm:grid-cols-2 lg:grid-cols-3 mt-12 max-w-6xl px-4">
+                    {/* Membre 1 */}
+                    <Card className="text-center">
+                        <CardHeader>
+                            <div className="flex justify-center mb-4">
+                                <div className="relative size-32 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                                    <Users className="h-16 w-16 text-muted-foreground" />
+                                </div>
+                            </div>
+                            <CardTitle className="text-xl">Nom du créateur</CardTitle>
+                            <CardDescription className="text-base font-medium text-primary">Promotion</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm text-muted-foreground">Description du rôle et des contributions au projet DC Metrics.</p>
+                        </CardContent>
+                    </Card>
+
+                    {/* Membre 2 */}
+                    <Card className="text-center">
+                        <CardHeader>
+                            <div className="flex justify-center mb-4">
+                                <div className="relative size-32 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                                    <Users className="h-16 w-16 text-muted-foreground" />
+                                </div>
+                            </div>
+                            <CardTitle className="text-xl">Nom du créateur</CardTitle>
+                            <CardDescription className="text-base font-medium text-primary">Promotion</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm text-muted-foreground">Description du rôle et des contributions au projet DC Metrics.</p>
+                        </CardContent>
+                    </Card>
+
+                    {/* Membre 3 */}
+                    <Card className="text-center">
+                        <CardHeader>
+                            <div className="flex justify-center mb-4">
+                                <div className="relative size-32 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                                    <Users className="h-16 w-16 text-muted-foreground" />
+                                </div>
+                            </div>
+                            <CardTitle className="text-xl">Nom du créateur</CardTitle>
+                            <CardDescription className="text-base font-medium text-primary">Promotion</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm text-muted-foreground">Description du rôle et des contributions au projet DC Metrics.</p>
                         </CardContent>
                     </Card>
                 </div>

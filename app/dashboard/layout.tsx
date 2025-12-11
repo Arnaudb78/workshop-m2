@@ -7,10 +7,14 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const account = await getAccountFromCookie();
-  if (!account) {
-    redirect("/login");
-  }
+    const account = await getAccountFromCookie();
+    if (!account) {
+        redirect("/login");
+    }
 
-  return <DashboardClient account={account}>{children}</DashboardClient>;
+    if (account.accessLevel === "STUDENT") {
+        redirect("/dashboard-student");
+    }
+
+    return <DashboardClient account={account}>{children}</DashboardClient>;
 }

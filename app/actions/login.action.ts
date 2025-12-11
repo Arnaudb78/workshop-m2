@@ -5,10 +5,13 @@ import bcrypt from "bcryptjs";
 import { connectToDatabase } from "@/lib/database";
 import Account from "@/models/account";
 import { cookies } from "next/headers";
+import { AccessLevelEnum } from "@/utils/types/account";
 
 type LoginPayload = {
     mail: string;
     password: string;
+    accessLevel?: AccessLevelEnum;
+    verificationCode?: string;
 };
 
 export async function LoginAction(payload: LoginPayload) {
@@ -28,6 +31,24 @@ export async function LoginAction(payload: LoginPayload) {
                 success: false,
                 message: "Aucun compte trouvé avec cet email.",
             };
+        }
+
+        // Si connexion admin, vérifier le code de vérification
+        if (user.accessLevel === AccessLevelEnum.ADMIN || payload.accessLevel === AccessLevelEnum.ADMIN) {
+            const adminLoginCode = process.env.ADMIN_LOGIN_VERIFICATION_CODE;
+            if (!adminLoginCode) {
+                return {
+                    success: false,
+                    message: "Configuration serveur invalide. Code de vérification admin manquant.",
+                };
+            }
+
+            if (!payload.verificationCode || payload.verificationCode !== adminLoginCode) {
+                return {
+                    success: false,
+                    message: "Code de vérification administrateur incorrect.",
+                };
+            }
         }
 
         const isValid = await bcrypt.compare(payload.password, user.password ?? "");
@@ -54,9 +75,13 @@ export async function LoginAction(payload: LoginPayload) {
             maxAge: 60 * 60 * 24 * 7,
         });
 
+        // Rediriger vers le bon dashboard selon le niveau d'accès
+        const redirectPath = accountData.accessLevel === AccessLevelEnum.ADMIN ? "/dashboard" : "/dashboard-student";
+
         return {
             success: true,
             data: accountData,
+            redirectPath,
         };
     } catch (error) {
         console.error("[LoginAction] error", error);

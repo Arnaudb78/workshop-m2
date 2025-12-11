@@ -6,14 +6,37 @@ import Account from "@/models/account";
 import { CreateAccountPayload } from "@/utils/types/account";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
+import { AccessLevelEnum } from "@/utils/types/account";
 
-export async function CreateAccountAction(payload: CreateAccountPayload) {
+type CreateAccountActionPayload = CreateAccountPayload & {
+    verificationCode?: string;
+};
+
+export async function CreateAccountAction(payload: CreateAccountActionPayload) {
     const validation = CreateAccountValition.safeParse(payload);
     if (!validation.success) {
         return {
             success: false,
             message: validation.error.message,
         };
+    }
+
+    // Si création de compte admin, vérifier le code de vérification
+    if (payload.accessLevel === AccessLevelEnum.ADMIN) {
+        const adminSignupCode = process.env.ADMIN_SIGNUP_VERIFICATION_CODE;
+        if (!adminSignupCode) {
+            return {
+                success: false,
+                message: "Configuration serveur invalide. Code de vérification admin manquant.",
+            };
+        }
+
+        if (!payload.verificationCode || payload.verificationCode !== adminSignupCode) {
+            return {
+                success: false,
+                message: "Code de vérification administrateur incorrect.",
+            };
+        }
     }
 
     try {
@@ -43,10 +66,13 @@ export async function CreateAccountAction(payload: CreateAccountPayload) {
             maxAge: 60 * 60 * 24 * 7,
         });
 
+        // Rediriger vers le bon dashboard selon le niveau d'accès
+        const redirectPath = payload.accessLevel === AccessLevelEnum.ADMIN ? "/dashboard" : "/dashboard-student";
+
         return {
             success: true,
             data: created,
-            pahtParams: "/dashboard",
+            pahtParams: redirectPath,
         };
     } catch (error) {
         console.error("[CreateAccountAction] error creating account", error);
