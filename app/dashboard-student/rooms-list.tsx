@@ -244,10 +244,7 @@ export default function RoomsList() {
         <>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {rooms.map((room) => (
-                    <Card
-                        key={room._id}
-                        className="cursor-pointer hover:shadow-md transition-shadow"
-                        onClick={() => handleCardClick(room)}>
+                    <Card key={room._id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => handleCardClick(room)}>
                         <CardHeader>
                             <CardTitle>{room.name || "Pièce sans nom"}</CardTitle>
                             <Badge
@@ -263,7 +260,7 @@ export default function RoomsList() {
                         <CardContent>
                             <div className="space-y-1 text-sm text-muted-foreground">
                                 {room.floor !== undefined && <p>Étage: {room.floor}</p>}
-                                {room.position !== undefined && <p>Position: {room.position}</p>}
+                                {room.position !== undefined && <p>Salle: {room.position}</p>}
                                 {room.description && <p className="mt-2">{room.description}</p>}
                             </div>
                         </CardContent>
@@ -295,7 +292,7 @@ export default function RoomsList() {
                                                 )}
                                                 {selectedRoom.position !== undefined && (
                                                     <div className="flex justify-between items-center">
-                                                        <span className="text-sm text-muted-foreground">Position</span>
+                                                        <span className="text-sm text-muted-foreground">Salle</span>
                                                         <span className="text-lg font-semibold">{selectedRoom.position}</span>
                                                     </div>
                                                 )}
@@ -346,7 +343,9 @@ export default function RoomsList() {
                                                             <div className="flex items-center gap-2">
                                                                 <h3 className="text-sm font-medium text-muted-foreground uppercase">CO₂</h3>
                                                                 {selectedRoom.status?.co2 && (
-                                                                    <Badge variant={getStatusBadgeVariant(selectedRoom.status.co2)} className="text-xs">
+                                                                    <Badge
+                                                                        variant={getStatusBadgeVariant(selectedRoom.status.co2)}
+                                                                        className="text-xs">
                                                                         {getStatusLabel(selectedRoom.status.co2)}
                                                                     </Badge>
                                                                 )}
@@ -372,7 +371,9 @@ export default function RoomsList() {
                                                             <div className="flex items-center gap-2">
                                                                 <h3 className="text-sm font-medium text-muted-foreground uppercase">Humidité</h3>
                                                                 {selectedRoom.status?.humidity && (
-                                                                    <Badge variant={getStatusBadgeVariant(selectedRoom.status.humidity)} className="text-xs">
+                                                                    <Badge
+                                                                        variant={getStatusBadgeVariant(selectedRoom.status.humidity)}
+                                                                        className="text-xs">
                                                                         {getStatusLabel(selectedRoom.status.humidity)}
                                                                     </Badge>
                                                                 )}
@@ -398,7 +399,9 @@ export default function RoomsList() {
                                                             <div className="flex items-center gap-2">
                                                                 <h3 className="text-sm font-medium text-muted-foreground uppercase">Température</h3>
                                                                 {selectedRoom.status?.temperature && (
-                                                                    <Badge variant={getStatusBadgeVariant(selectedRoom.status.temperature)} className="text-xs">
+                                                                    <Badge
+                                                                        variant={getStatusBadgeVariant(selectedRoom.status.temperature)}
+                                                                        className="text-xs">
                                                                         {getStatusLabel(selectedRoom.status.temperature)}
                                                                     </Badge>
                                                                 )}
@@ -424,7 +427,9 @@ export default function RoomsList() {
                                                             <div className="flex items-center gap-2">
                                                                 <h3 className="text-sm font-medium text-muted-foreground uppercase">Décibels</h3>
                                                                 {selectedRoom.status?.decibel && (
-                                                                    <Badge variant={getStatusBadgeVariant(selectedRoom.status.decibel)} className="text-xs">
+                                                                    <Badge
+                                                                        variant={getStatusBadgeVariant(selectedRoom.status.decibel)}
+                                                                        className="text-xs">
                                                                         {getStatusLabel(selectedRoom.status.decibel)}
                                                                     </Badge>
                                                                 )}
@@ -454,7 +459,9 @@ export default function RoomsList() {
                                                     <Card className="border md:col-span-2">
                                                         <CardContent className="pt-6">
                                                             <div className="text-center py-8">
-                                                                <span className="text-sm text-muted-foreground">Aucune métrique disponible pour le moment</span>
+                                                                <span className="text-sm text-muted-foreground">
+                                                                    Aucune métrique disponible pour le moment
+                                                                </span>
                                                             </div>
                                                         </CardContent>
                                                     </Card>

@@ -259,7 +259,7 @@ export default function Rooms() {
                                 <CardContent>
                                     <div className="space-y-1 text-sm text-muted-foreground">
                                         {room.floor !== undefined && <p>Étage: {room.floor}</p>}
-                                        {room.position !== undefined && <p>Position: {room.position}</p>}
+                                        {room.position !== undefined && <p>Salle: {room.position}</p>}
                                         {room.description && <p className="mt-2">{room.description}</p>}
                                         {room.sensorId && <p className="text-xs mt-2">Capteur: {room.sensorId}</p>}
                                     </div>
