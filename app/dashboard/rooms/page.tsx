@@ -82,13 +82,12 @@ export default function Rooms() {
     };
 
     const handleCardClick = (room: Room) => {
-        console.log("[Rooms] Card clicked, room data:", room);
         setSelectedRoom(room);
         setAcceptableValues({
-            co2: room.acceptable?.co2 ?? 0,
-            decibel: room.acceptable?.decibel ?? 0,
-            humidity: room.acceptable?.humidity ?? 0,
-            temperature: room.acceptable?.temperature ?? 0,
+            co2: room.acceptable?.co2 || 0,
+            decibel: room.acceptable?.decibel || 0,
+            humidity: room.acceptable?.humidity || 0,
+            temperature: room.acceptable?.temperature || 0,
         });
         setDrawerOpen(true);
     };
@@ -106,17 +105,10 @@ export default function Rooms() {
         setSaving(true);
         setError(null);
         try {
-            console.log("[Rooms] Saving acceptable values:", {
-                roomId: selectedRoom._id,
-                acceptableValues,
-            });
-
             const result = await UpdateAcceptableValuesRoomAction({
                 roomId: selectedRoom._id,
                 acceptable: acceptableValues,
             });
-
-            console.log("[Rooms] Save result:", result);
 
             if (result.success) {
                 await fetchRooms();
