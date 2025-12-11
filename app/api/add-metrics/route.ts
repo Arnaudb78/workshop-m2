@@ -16,6 +16,7 @@ export async function POST(request: Request) {
 
         const saveData = await environmentMetrics.create({
             sensorRef: payload.sensorRef, 
+            luminos: payload?.luminos,
             humidity: {
                 humidityNumber: payload?.humidity?.humidityNumber,
                 unit: payload?.humidity?.unit || "%",

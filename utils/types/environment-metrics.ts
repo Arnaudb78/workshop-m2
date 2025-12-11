@@ -28,6 +28,7 @@ export enum ComfortLevel {
 
 export type EnvironmentMetricsType = {
   sensorRef: string;
+  luminos?: number;
   humidity?: {
     humidityNumber?: string;
     unit?: HumidityUnit;

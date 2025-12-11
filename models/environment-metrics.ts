@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, models } from "mongoose";
 
 const EnvironmentMetricsSchema = new Schema({
     environmentMetricId: Schema.ObjectId,
@@ -10,6 +10,7 @@ const EnvironmentMetricsSchema = new Schema({
             enum: ["%", "g/m3", "g/kg", "ppmv"],
         },
     },
+    luminos: Number,
     temperature: {
         temperatureReading: String,
         unit: {
@@ -28,4 +29,4 @@ const EnvironmentMetricsSchema = new Schema({
     refreshAt: { type: Date, default: Date.now },
 });
 
-export default mongoose.model("EnvironmentMetrics", EnvironmentMetricsSchema);
+export default models.EnvironmentMetrics || mongoose.model("EnvironmentMetrics", EnvironmentMetricsSchema);

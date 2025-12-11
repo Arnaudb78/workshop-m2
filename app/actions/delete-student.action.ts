@@ -39,3 +39,4 @@ export async function DeleteStudentAction(payload: DeleteStudentPayload) {
         };
     }
 }
+

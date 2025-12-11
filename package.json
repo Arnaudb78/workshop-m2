@@ -6,7 +6,8 @@
         "dev": "next dev",
         "build": "next build",
         "start": "next start",
-        "lint": "eslint"
+        "lint": "eslint",
+        "simulate-sensor": "node scripts/simulate-sensor.js"
     },
     "dependencies": {
         "@radix-ui/react-dialog": "^1.1.15",
@@ -16,6 +17,7 @@
         "@radix-ui/react-slot": "^1.2.4",
         "@radix-ui/react-tooltip": "^1.2.8",
         "bcryptjs": "^3.0.3",
+        "chart.js": "^4.5.1",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "lucide-react": "^0.556.0",
@@ -23,6 +25,7 @@
         "next": "16.0.8",
         "next-themes": "^0.4.6",
         "react": "19.2.1",
+        "react-chartjs-2": "^5.3.1",
         "react-dom": "19.2.1",
         "tailwind-merge": "^3.4.0",
         "vaul": "^1.1.2",

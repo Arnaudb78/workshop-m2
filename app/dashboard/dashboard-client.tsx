@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Home, LineChart, School, Settings, Users } from "lucide-react";
+import { AirVent, Home, School, Settings, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -42,7 +42,7 @@ export default function DashboardClient({ account, children, title = "Dashboard"
     const navItems = [
         { href: "/dashboard", icon: Home, label: "Accueil" },
         { href: "/dashboard/rooms", icon: School, label: "Pièces" },
-        { href: "/dashboard/metrics", icon: LineChart, label: "Mesures" },
+        { href: "/dashboard/sensors", icon: AirVent, label: "Capteurs" },
         { href: "/dashboard/students", icon: Users, label: "Étudiants" },
         { href: "/dashboard/settings", icon: Settings, label: "Paramètres" },
     ];
