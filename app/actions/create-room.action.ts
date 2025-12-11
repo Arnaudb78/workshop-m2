@@ -26,6 +26,12 @@ export async function CreateRoomAction(payload: CreateRoomPayload) {
             description: payload.description || "",
             isUsed: payload.isUsed,
             sensorId: payload.sensorId || null,
+            acceptable: {
+                co2: 0,
+                decibel: 0,
+                humidity: 0,
+                temperature: 0,
+            },
         });
 
         const createdJson = createdDoc.toJSON({ versionKey: false });

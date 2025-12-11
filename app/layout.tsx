@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DG Metrics",
+  title: "DC Metrics",
   description: "Suivez en temps réel les conditions de vos salles de classe.",
 };
 

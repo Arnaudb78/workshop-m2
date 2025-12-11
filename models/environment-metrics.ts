@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose";
 
 const EnvironmentMetricsSchema = new Schema({
     environmentMetricId: Schema.ObjectId,
-    roomId: Schema.ObjectId,
+    sensorRef: String,
     humidity: {
         humidityNumber: String,
         unit: {
@@ -19,7 +19,6 @@ const EnvironmentMetricsSchema = new Schema({
     },
     sound: {
         decibel: Number,
-        acceptableDecibelNumber: Number,
         unit: {
             type: String,
             enum: ["dB", "dBA", "dBC", "dBSPL"],
@@ -27,12 +26,6 @@ const EnvironmentMetricsSchema = new Schema({
     },
     co2: String,
     refreshAt: { type: Date, default: Date.now },
-    sensorId: Schema.ObjectId,
-    comfortLevel: {
-        type: String,
-        enum: ["REALLY_GOOD", "GOOD", "BAD", "REALLY_BAD"],
-    },
-    needVentilation: Boolean,
 });
 
 export default mongoose.model("EnvironmentMetrics", EnvironmentMetricsSchema);

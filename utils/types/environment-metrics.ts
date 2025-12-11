@@ -27,7 +27,7 @@ export enum ComfortLevel {
 }
 
 export type EnvironmentMetricsType = {
-  roomId?: string;
+  sensorRef: string;
   humidity?: {
     humidityNumber?: string;
     unit?: HumidityUnit;
@@ -38,12 +38,8 @@ export type EnvironmentMetricsType = {
   };
   sound?: {
     decibel?: number;
-    acceptableDecibelNumber?: number;
     unit?: SoundUnit;
   };
   co2?: string;
   refreshAt?: Date | string;
-  sensorId?: string;
-  comfortLevel?: ComfortLevel;
-  needVentilation?: boolean;
 };
