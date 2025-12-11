@@ -4,20 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Pencil } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend,
-    ArcElement,
-} from "chart.js";
+import { UpdateSensorAction } from "@/app/actions/update-sensor.action";
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, ArcElement } from "chart.js";
 import { Line } from "react-chartjs-2";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, ArcElement);
@@ -63,6 +57,11 @@ export default function Sensors() {
     const [error, setError] = useState<string | null>(null);
     const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [editingSensor, setEditingSensor] = useState<Sensor | null>(null);
+    const [sheetOpen, setSheetOpen] = useState(false);
+    const [editName, setEditName] = useState("");
+    const [editRoomId, setEditRoomId] = useState<string | null>(null);
+    const [updating, setUpdating] = useState(false);
 
     const fetchSensors = async () => {
         try {
@@ -152,13 +151,12 @@ export default function Sensors() {
         fetchMetrics(selectedRoom);
     }, [selectedRoom]);
 
-    // Rafraîchir les métriques toutes les 30 secondes quand une salle est sélectionnée
     useEffect(() => {
         if (!selectedRoom) return;
 
         const interval = setInterval(() => {
             fetchMetrics(selectedRoom);
-        }, 30000); // 30 secondes
+        }, 10000);
 
         return () => clearInterval(interval);
     }, [selectedRoom]);
@@ -169,10 +167,8 @@ export default function Sensors() {
         return room?.name || "Salle inconnue";
     };
 
-    // Afficher tous les capteurs
     const allSensors = sensors;
 
-    // Préparer les données pour les graphiques avec un espacement de 2 minutes
     const prepareChartData = (data: EnvironmentMetric[], metricType: "temperature" | "humidity" | "co2" | "sound") => {
         if (!data || data.length === 0) {
             return { labels: [], values: [], sensorRefs: [] };
@@ -199,11 +195,7 @@ export default function Sensors() {
             }
         });
 
-        // Si après filtrage on n'a qu'un seul point mais qu'on a plusieurs données,
-        // réduire l'intervalle de filtrage ou prendre un échantillonnage
         if (filteredData.length <= 1 && sortedData.length > 1) {
-            // Si toutes les données sont dans une fenêtre de moins de 2 minutes,
-            // échantillonner pour avoir au moins quelques points visibles
             const maxPoints = Math.min(20, sortedData.length);
             const step = Math.max(1, Math.floor(sortedData.length / maxPoints));
             const sampledData: EnvironmentMetric[] = [];
@@ -212,7 +204,6 @@ export default function Sensors() {
                 sampledData.push(sortedData[i]);
             }
 
-            // S'assurer d'inclure le dernier point
             if (sortedData.length > 0) {
                 const lastPoint = sortedData[sortedData.length - 1];
                 if (sampledData.length === 0 || sampledData[sampledData.length - 1]._id !== lastPoint._id) {
@@ -330,9 +321,44 @@ export default function Sensors() {
     };
 
     const handleRoomClick = (roomId: string | null) => {
-        if (!roomId) return; // Ne pas ouvrir le drawer si pas de roomId
+        if (!roomId) return;
         setSelectedRoom(roomId);
         setDrawerOpen(true);
+    };
+
+    const handleEditClick = (sensor: Sensor, e: React.MouseEvent) => {
+        e.stopPropagation(); // Empêcher l'ouverture du drawer
+        setEditingSensor(sensor);
+        setEditName(sensor.name || "");
+        setEditRoomId(sensor.roomId || null);
+        setSheetOpen(true);
+    };
+
+    const handleUpdateSensor = async () => {
+        if (!editingSensor) return;
+
+        setUpdating(true);
+        try {
+            const result = await UpdateSensorAction({
+                sensorId: editingSensor._id,
+                name: editName.trim() || undefined,
+                roomId: editRoomId || null,
+            });
+
+            if (result.success && result.data) {
+                // Mettre à jour la liste des capteurs
+                setSensors((prev) => prev.map((s) => (s._id === editingSensor._id ? result.data : s)));
+                setSheetOpen(false);
+                setEditingSensor(null);
+            } else {
+                alert(result.message || "Erreur lors de la mise à jour du capteur");
+            }
+        } catch (err) {
+            console.error("[Sensors] error updating sensor", err);
+            alert("Une erreur est survenue lors de la mise à jour du capteur");
+        } finally {
+            setUpdating(false);
+        }
     };
 
     return (
@@ -380,7 +406,12 @@ export default function Sensors() {
                                 className={`relative transition-shadow ${sensor.roomId ? "cursor-pointer hover:shadow-md" : ""}`}
                                 onClick={() => sensor.roomId && handleRoomClick(sensor.roomId)}>
                                 <CardHeader>
-                                    <CardTitle>{sensor.name || sensor.reference}</CardTitle>
+                                    <div className="flex items-center justify-between">
+                                        <CardTitle>{sensor.name || sensor.reference}</CardTitle>
+                                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => handleEditClick(sensor, e)}>
+                                            <Pencil className="h-4 w-4" />
+                                        </Button>
+                                    </div>
                                 </CardHeader>
                                 <CardContent className="relative">
                                     <div className="space-y-1 text-sm text-muted-foreground">
@@ -456,6 +487,60 @@ export default function Sensors() {
                     </div>
                 </DrawerContent>
             </Drawer>
+
+            {/* Sheet pour éditer un capteur */}
+            <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+                <SheetContent>
+                    <SheetHeader>
+                        <SheetTitle>Éditer le capteur</SheetTitle>
+                        <SheetDescription>Modifiez le nom et assignez une salle au capteur.</SheetDescription>
+                    </SheetHeader>
+                    <div className="m-6 space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="sensor-name">Nom du capteur</Label>
+                            <Input
+                                id="sensor-name"
+                                value={editName}
+                                onChange={(e) => setEditName(e.target.value)}
+                                placeholder={editingSensor?.reference}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="sensor-room">Salle</Label>
+                            <select
+                                id="sensor-room"
+                                value={editRoomId || ""}
+                                onChange={(e) => setEditRoomId(e.target.value || null)}
+                                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
+                                <option value="">Aucune salle</option>
+                                {rooms.map((room) => (
+                                    <option key={room._id} value={room._id}>
+                                        {room.name || `Salle ${room._id}`}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Référence</Label>
+                            <Input value={editingSensor?.reference || ""} disabled className="bg-muted" />
+                        </div>
+                        <div className="flex gap-2 pt-4">
+                            <Button onClick={handleUpdateSensor} disabled={updating} className="flex-1">
+                                {updating ? "Mise à jour..." : "Enregistrer"}
+                            </Button>
+                            <Button
+                                variant="outline"
+                                onClick={() => {
+                                    setSheetOpen(false);
+                                    setEditingSensor(null);
+                                }}
+                                disabled={updating}>
+                                Annuler
+                            </Button>
+                        </div>
+                    </div>
+                </SheetContent>
+            </Sheet>
         </div>
     );
 }

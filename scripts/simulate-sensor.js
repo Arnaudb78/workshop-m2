@@ -12,7 +12,8 @@
  */
 
 const API_URL = process.env.API_URL || process.argv[3] || "http://localhost:3000";
-const SENSOR_REF = "SENSOR-1765466256599";
+const SENSOR_REF = process.argv[2] || `SENSOR-${Date.now()}`; // automatic 
+// const SENSOR_REF = "SENSOR-1765466256599";
 const CHECK_INTERVAL = 5000; // Vérifier toutes les 5 secondes si le capteur est prêt
 const METRICS_INTERVAL = 30000; // Envoyer des métriques toutes les 30 secondes
 
