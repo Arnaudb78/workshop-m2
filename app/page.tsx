@@ -7,7 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { Thermometer, Droplets, Wind, Smartphone, BarChart3, ShieldCheck, Activity, Users } from "lucide-react";
+import { Thermometer, Droplets, Wind, Smartphone, BarChart3, ShieldCheck, Activity, Users, Volume2, Settings } from "lucide-react";
 
 export default function Home() {
     const { theme, resolvedTheme } = useTheme();
@@ -26,7 +26,11 @@ export default function Home() {
             <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
                 <div className="w-full flex h-16 items-center justify-between px-4 mx-auto">
                     <div className="flex items-center gap-2">
-                        {mounted && <Link href="/"><Image src={logoSrc} alt="DC Metrics Logo" width={120} height={40} className="h-10 w-auto" priority /></Link>}
+                        {mounted && (
+                            <Link href="/">
+                                <Image src={logoSrc} alt="DC Metrics Logo" width={120} height={40} className="h-10 w-auto" priority />
+                            </Link>
+                        )}
                     </div>
                     <div className="flex items-center gap-4">
                         <ModeToggle />
@@ -115,14 +119,26 @@ export default function Home() {
                             <CardDescription className="text-center">Boîtier NFC externe avec badge de contact</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="flex flex-col items-center gap-3">
-                                <Users className="h-5 w-5 text-muted-foreground" />
-                                <div className="text-center">
-                                    <p className="font-medium mb-2">Statut de la salle</p>
-                                    <p className="text-sm text-muted-foreground">
-                                        Un second boîtier équipé d&apos;un contact NFC permet de détecter si une salle de classe est occupée ou
-                                        disponible. Les utilisateurs peuvent badger pour indiquer la présence dans la salle.
-                                    </p>
+                            <div className="space-y-4">
+                                <div className="flex flex-col items-center gap-3">
+                                    <Users className="h-5 w-5 text-muted-foreground" />
+                                    <div className="text-center">
+                                        <p className="font-medium mb-2">Statut de la salle</p>
+                                        <p className="text-sm text-muted-foreground">
+                                            Un second boîtier équipé d&apos;un contact NFC permet de détecter si une salle de classe est occupée ou
+                                            disponible. Les utilisateurs peuvent badger pour indiquer la présence dans la salle.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex flex-col items-center gap-3">
+                                    <Volume2 className="h-5 w-5 text-muted-foreground" />
+                                    <div className="text-center">
+                                        <p className="font-medium mb-2">Détection des décibels</p>
+                                        <p className="text-sm text-muted-foreground">
+                                            Un capteur de décibels intégré permet de mesurer en temps réel le niveau sonore ambiant de la salle de
+                                            classe. Cette fonctionnalité aide à maintenir un environnement d&apos;apprentissage optimal.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </CardContent>
@@ -140,12 +156,13 @@ export default function Home() {
                         <CardContent>
                             <div className="space-y-4">
                                 <div className="flex flex-col items-center gap-2">
-                                    <ShieldCheck className="h-5 w-5 text-muted-foreground" />
+                                    <Settings className="h-5 w-5 text-muted-foreground" />
                                     <div className="text-center">
-                                        <p className="font-medium">Accès Administrateur</p>
+                                        <p className="font-medium">Paramètres Personnalisés</p>
                                         <p className="text-sm text-muted-foreground">
-                                            Les administrateurs peuvent consulter toutes les métriques environnementales et l&apos;état
-                                            d&apos;occupation pour chaque salle.
+                                            Chaque salle de classe peut être configurée avec ses propres paramètres. Les administrateurs peuvent
+                                            définir des seuils différents pour la température, l&apos;humidité, le CO2 et les décibels selon les
+                                            besoins spécifiques de chaque classe.
                                         </p>
                                     </div>
                                 </div>
