@@ -177,14 +177,23 @@ export default function Home() {
                         <CardHeader>
                             <div className="flex justify-center mb-4">
                                 <div className="relative size-32 rounded-full bg-muted flex items-center justify-center overflow-hidden">
-                                    <Users className="h-16 w-16 text-muted-foreground" />
+                                    <Image
+                                        src="/arnaud.png"
+                                        alt="Arnaud Beaulieu"
+                                        width={128}
+                                        height={128}
+                                        className="w-full h-full object-cover rounded-full"
+                                    />
                                 </div>
                             </div>
-                            <CardTitle className="text-xl">Nom du créateur</CardTitle>
-                            <CardDescription className="text-base font-medium text-primary">Promotion</CardDescription>
+                            <CardTitle className="text-xl">Arnaud Beaulieu</CardTitle>
+                            <CardDescription className="text-base font-medium text-primary">Mastère 2 Tech-Lead</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-sm text-muted-foreground">Description du rôle et des contributions au projet DC Metrics.</p>
+                            <p className="text-sm text-muted-foreground">
+                                Développeur full-stack passionné, spécialisé dans la création d&apos;APIs robustes et d&apos;interfaces utilisateur
+                                modernes. Expert en architecture backend et développement frontend pour des solutions IoT innovantes.
+                            </p>
                         </CardContent>
                     </Card>
 
@@ -193,14 +202,23 @@ export default function Home() {
                         <CardHeader>
                             <div className="flex justify-center mb-4">
                                 <div className="relative size-32 rounded-full bg-muted flex items-center justify-center overflow-hidden">
-                                    <Users className="h-16 w-16 text-muted-foreground" />
+                                    <Image
+                                        src="/elena.png"
+                                        alt="Elena Ferreira"
+                                        width={128}
+                                        height={128}
+                                        className="w-full h-full object-cover rounded-full"
+                                    />
                                 </div>
                             </div>
-                            <CardTitle className="text-xl">Nom du créateur</CardTitle>
-                            <CardDescription className="text-base font-medium text-primary">Promotion</CardDescription>
+                            <CardTitle className="text-xl">Elena Ferreira</CardTitle>
+                            <CardDescription className="text-base font-medium text-primary">Mastère 2 Tech-Lead</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-sm text-muted-foreground">Description du rôle et des contributions au projet DC Metrics.</p>
+                            <p className="text-sm text-muted-foreground">
+                                Spécialisée dans le développement de firmware embarqué, elle a principalement développé les différents firmware des
+                                modules ESP-32 utilisés dans le projet pour la collecte et la transmission des données environnementales.
+                            </p>
                         </CardContent>
                     </Card>
 
@@ -212,11 +230,15 @@ export default function Home() {
                                     <Users className="h-16 w-16 text-muted-foreground" />
                                 </div>
                             </div>
-                            <CardTitle className="text-xl">Nom du créateur</CardTitle>
-                            <CardDescription className="text-base font-medium text-primary">Promotion</CardDescription>
+                            <CardTitle className="text-xl">Jules Fakhouri</CardTitle>
+                            <CardDescription className="text-base font-medium text-primary">Mastère 2 Tech-Lead</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-sm text-muted-foreground">Description du rôle et des contributions au projet DC Metrics.</p>
+                            <p className="text-sm text-muted-foreground">
+                                Spécialisé en design industriel et modélisation 3D, il a principalement travaillé sur les modèles, plans et conception
+                                3D des boîtiers pour les modules ESP-32, assurant à la fois l&apos;esthétique et la fonctionnalité des dispositifs
+                                IoT.
+                            </p>
                         </CardContent>
                     </Card>
                 </div>
@@ -244,7 +266,7 @@ export default function Home() {
             <footer className="border-t py-6 md:py-0 w-full">
                 <div className="w-full flex flex-col items-center justify-center gap-4 md:h-24">
                     <p className="text-center text-sm leading-loose text-muted-foreground">
-                        © {new Date().getFullYear()} DC Metrics. Projet Master IoT. Group 1.
+                        © {new Date().getFullYear()} DC Metrics. Workshop Master 2 IoT. Make with ❤️
                     </p>
                 </div>
             </footer>

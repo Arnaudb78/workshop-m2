@@ -28,7 +28,7 @@ export default function DashboardStudentClient({ account, children }: Props) {
                                 <span className="text-sm font-semibold leading-tight">
                                     {account.name} {account.lastname}
                                 </span>
-                                <span className="text-xs text-muted-foreground">Étudiant</span>
+                                <span className="text-xs text-muted-foreground">Étudiant | {account.schoolPromotion}</span>
                             </div>
                         </div>
                     </div>

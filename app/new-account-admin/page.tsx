@@ -26,6 +26,7 @@ export default function NewAccountAdmin() {
         mail: "",
         password: "",
         verificationCode: "",
+        poste: "",
     });
 
     const [error, setError] = useState<string | null>(null);
@@ -58,6 +59,7 @@ export default function NewAccountAdmin() {
             password: form.password,
             accessLevel: AccessLevelEnum.ADMIN,
             verificationCode: form.verificationCode,
+            poste: form.poste,
         };
         const result = await CreateAccountAction(payload);
 
@@ -101,112 +103,111 @@ export default function NewAccountAdmin() {
             <div className="flex flex-1 items-center justify-center p-4">
                 <div className="w-full max-w-md">
                     <Card className="w-full">
-                    <CardHeader>
-                        <div className="flex items-center gap-2">
-                            <div>
-                                <CardTitle className="text-2xl">Créer un compte administrateur</CardTitle>
-                                <CardDescription className="mt-2">Renseigne tes informations pour créer ton compte admin</CardDescription>
+                        <CardHeader>
+                            <div className="flex items-center gap-2">
+                                <div>
+                                    <CardTitle className="text-2xl">Créer un compte administrateur</CardTitle>
+                                    <CardDescription className="mt-2">Renseigne tes informations pour créer ton compte admin</CardDescription>
+                                </div>
                             </div>
-                        </div>
-                    </CardHeader>
+                        </CardHeader>
 
-                    <CardContent>
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="name">Prénom</Label>
-                                    <Input 
-                                        id="name" 
-                                        name="name" 
-                                        value={form.name} 
-                                        onChange={handleChange("name")} 
-                                        placeholder="Jane" 
-                                        required 
-                                    />
+                        <CardContent>
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="name">Prénom</Label>
+                                        <Input id="name" name="name" value={form.name} onChange={handleChange("name")} placeholder="Jane" required />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="lastname">Nom</Label>
+                                        <Input
+                                            id="lastname"
+                                            name="lastname"
+                                            value={form.lastname}
+                                            onChange={handleChange("lastname")}
+                                            placeholder="Doe"
+                                            required
+                                        />
+                                    </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="lastname">Nom</Label>
+                                    <Label htmlFor="mail">Adresse email</Label>
                                     <Input
-                                        id="lastname"
-                                        name="lastname"
-                                        value={form.lastname}
-                                        onChange={handleChange("lastname")}
-                                        placeholder="Doe"
+                                        id="mail"
+                                        name="mail"
+                                        value={form.mail}
+                                        onChange={handleChange("mail")}
+                                        placeholder="admin@example.com"
                                         required
                                     />
                                 </div>
-                            </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="mail">Adresse email</Label>
-                                <Input 
-                                    id="mail" 
-                                    name="mail" 
-                                    value={form.mail} 
-                                    onChange={handleChange("mail")} 
-                                    placeholder="admin@example.com" 
-                                    required 
-                                />
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="password">Mot de passe</Label>
-                                <Input
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    value={form.password}
-                                    onChange={handleChange("password")}
-                                    placeholder="••••••••"
-                                    required
-                                />
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="verificationCode">Code de vérification</Label>
-                                <Input
-                                    id="verificationCode"
-                                    name="verificationCode"
-                                    type="password"
-                                    value={form.verificationCode}
-                                    onChange={handleChange("verificationCode")}
-                                    placeholder="Code d'accès administrateur"
-                                    required
-                                />
-                                <p className="text-xs text-muted-foreground">
-                                    Code requis pour créer un compte administrateur
-                                </p>
-                            </div>
-
-                            {error && (
-                                <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-                                    {error}
+                                <div className="space-y-2">
+                                    <Label htmlFor="password">Mot de passe</Label>
+                                    <Input
+                                        id="password"
+                                        name="password"
+                                        type="password"
+                                        value={form.password}
+                                        onChange={handleChange("password")}
+                                        placeholder="••••••••"
+                                        required
+                                    />
                                 </div>
-                            )}
 
-                            <Button type="submit" className="w-full" size="lg" disabled={loading}>
-                                {loading ? "Création..." : "Créer mon compte"}
-                            </Button>
+                                <div className="space-y-2">
+                                    <Label htmlFor="poste">Poste</Label>
+                                    <Input
+                                        id="poste"
+                                        name="poste"
+                                        value={form.poste}
+                                        onChange={handleChange("poste")}
+                                        placeholder="Ex: Directeur"
+                                        required
+                                    />
+                                </div>
 
-                            <div className="text-center text-sm">
-                                <span className="text-muted-foreground">Déjà un compte ? </span>
-                                <Link href="/login-admin" className="font-medium text-primary hover:underline">
-                                    Se connecter
-                                </Link>
+                                <div className="space-y-2">
+                                    <Label htmlFor="verificationCode">Code de vérification</Label>
+                                    <Input
+                                        id="verificationCode"
+                                        name="verificationCode"
+                                        type="password"
+                                        value={form.verificationCode}
+                                        onChange={handleChange("verificationCode")}
+                                        placeholder="Code d'accès administrateur"
+                                        required
+                                    />
+                                    <p className="text-xs text-muted-foreground">Code requis pour créer un compte administrateur</p>
+                                </div>
+
+                                {error && <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
+
+                                <Button type="submit" className="w-full" size="lg" disabled={loading}>
+                                    {loading ? "Création..." : "Créer mon compte"}
+                                </Button>
+
+                                <div className="text-center text-sm">
+                                    <span className="text-muted-foreground">Déjà un compte ? </span>
+                                    <Link href="/login-admin" className="font-medium text-primary hover:underline">
+                                        Se connecter
+                                    </Link>
+                                </div>
+                            </form>
+
+                            <div className="mt-6 pt-4 border-t">
+                                <Button variant="ghost" size="sm" className="w-full" asChild>
+                                    <Link href="/">
+                                        <ArrowLeft className="mr-2 h-4 w-4" />
+                                        Retour à l&apos;accueil
+                                    </Link>
+                                </Button>
                             </div>
-                        </form>
-
-                        <div className="mt-6 pt-4 border-t">
-                            <Button variant="ghost" size="sm" className="w-full" asChild>
-                                <Link href="/">
-                                    <ArrowLeft className="mr-2 h-4 w-4" />
-                                    Retour à l&apos;accueil
-                                </Link>
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
         </div>

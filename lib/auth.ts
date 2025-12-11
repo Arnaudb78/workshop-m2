@@ -1,11 +1,13 @@
 import { cookies } from "next/headers";
 
 export type AccountCookie = {
-  _id: string;
-  name: string;
-  lastname: string;
-  mail: string;
-  accessLevel: "ADMIN" | "STUDENT";
+    _id: string;
+    name: string;
+    lastname: string;
+    mail: string;
+    accessLevel: "ADMIN" | "STUDENT";
+    schoolPromotion?: string;
+    poste?: string;
 };
 
 export async function getAccountFromCookie(): Promise<AccountCookie | null> {

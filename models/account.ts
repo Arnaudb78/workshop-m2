@@ -11,10 +11,22 @@ const AccountSchema = new Schema(
             type: String,
             enum: ["ADMIN", "STUDENT"],
         },
+        schoolPromotion: {
+            type: String,
+            required: false,
+        },
+        poste: {
+            type: String,
+            required: false,
+        },
     },
     {
         timestamps: true,
     }
 );
 
-export default models.Account || mongoose.model("Account", AccountSchema);
+if (models.Account) {
+    delete mongoose.models.Account;
+}
+
+export default mongoose.model("Account", AccountSchema);

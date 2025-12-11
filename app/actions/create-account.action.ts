@@ -52,16 +52,40 @@ export async function CreateAccountAction(payload: CreateAccountActionPayload) {
 
         const hashedPassword = await bcrypt.hash(payload.password, 10);
 
-        const createdDoc = await Account.create({
+        const accountData: any = {
             name: payload.name,
             lastname: payload.lastname,
             mail: payload.mail,
             password: hashedPassword,
             accessLevel: payload.accessLevel,
-        });
+        };
 
-        const createdJson = createdDoc.toJSON({ versionKey: false });
-        const created = { ...createdJson, _id: createdDoc._id.toString() };
+        // Ajouter schoolPromotion pour les étudiants
+        if (payload.accessLevel === AccessLevelEnum.STUDENT) {
+            if (!payload.schoolPromotion || payload.schoolPromotion.trim().length === 0) {
+                return {
+                    success: false,
+                    message: "La promotion est requise pour créer un compte étudiant.",
+                };
+            }
+            accountData.schoolPromotion = payload.schoolPromotion;
+        }
+
+        // Ajouter poste pour les admins
+        if (payload.accessLevel === AccessLevelEnum.ADMIN) {
+            if (!payload.poste || payload.poste.trim().length === 0) {
+                return {
+                    success: false,
+                    message: "Le poste est requis pour créer un compte administrateur.",
+                };
+            }
+            accountData.poste = payload.poste;
+        }
+
+        const createdDoc = await Account.create(accountData);
+
+        const createdJson = (createdDoc as any).toJSON({ versionKey: false });
+        const created = { ...createdJson, _id: (createdDoc as any)._id.toString() };
 
         const cookieStore = await cookies();
 
@@ -74,7 +98,6 @@ export async function CreateAccountAction(payload: CreateAccountActionPayload) {
             maxAge: 60 * 60 * 24 * 7,
         });
 
-        // Rediriger vers le bon dashboard selon le niveau d'accès
         const redirectPath = payload.accessLevel === AccessLevelEnum.ADMIN ? "/dashboard" : "/dashboard-student";
 
         return {
