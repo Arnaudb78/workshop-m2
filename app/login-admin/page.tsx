@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { LoginAction } from "@/app/actions/login.action";
 import { AccessLevelEnum } from "@/utils/types/account";
 import Link from "next/link";
-import { ArrowLeft, Shield } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { ModeToggle } from "@/components/toggle-mode";
 
 export default function LoginAdminPage() {
@@ -93,7 +93,6 @@ export default function LoginAdminPage() {
                     <Card className="w-full">
                     <CardHeader>
                         <div className="flex items-center gap-2">
-                            <Shield className="h-5 w-5 text-primary" />
                             <div>
                                 <CardTitle className="text-2xl">Connexion Administrateur</CardTitle>
                                 <CardDescription className="mt-2">Accède à ton espace administrateur</CardDescription>

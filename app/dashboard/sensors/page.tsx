@@ -27,6 +27,12 @@ type Sensor = {
 type Room = {
     _id: string;
     name?: string;
+    status?: {
+        co2?: "REALLY_GOOD" | "GOOD" | "BAD" | "REALLY_BAD" | null;
+        decibel?: "REALLY_GOOD" | "GOOD" | "BAD" | "REALLY_BAD" | null;
+        humidity?: "REALLY_GOOD" | "GOOD" | "BAD" | "REALLY_BAD" | null;
+        temperature?: "REALLY_GOOD" | "GOOD" | "BAD" | "REALLY_BAD" | null;
+    };
 };
 
 type EnvironmentMetric = {
@@ -165,6 +171,45 @@ export default function Sensors() {
         if (!roomId) return "Non assigné";
         const room = rooms.find((r) => r._id === roomId);
         return room?.name || "Salle inconnue";
+    };
+
+    const getRoom = (roomId: string | null | undefined): Room | undefined => {
+        if (!roomId) return undefined;
+        return rooms.find((r) => r._id === roomId);
+    };
+
+    const getStatusBadgeVariant = (
+        status: "REALLY_GOOD" | "GOOD" | "BAD" | "REALLY_BAD" | null | undefined
+    ): "default" | "secondary" | "destructive" | "outline" => {
+        if (!status) return "outline";
+        switch (status) {
+            case "REALLY_GOOD":
+                return "default";
+            case "GOOD":
+                return "secondary";
+            case "BAD":
+                return "destructive";
+            case "REALLY_BAD":
+                return "destructive";
+            default:
+                return "outline";
+        }
+    };
+
+    const getStatusLabel = (status: "REALLY_GOOD" | "GOOD" | "BAD" | "REALLY_BAD" | null | undefined): string => {
+        if (!status) return "N/A";
+        switch (status) {
+            case "REALLY_GOOD":
+                return "Excellent";
+            case "GOOD":
+                return "Bon";
+            case "BAD":
+                return "Mauvais";
+            case "REALLY_BAD":
+                return "Très mauvais";
+            default:
+                return "N/A";
+        }
     };
 
     const allSensors = sensors;
@@ -403,7 +448,7 @@ export default function Sensors() {
                         {allSensors.map((sensor) => (
                             <Card
                                 key={sensor._id}
-                                className={`relative transition-shadow ${sensor.roomId ? "cursor-pointer hover:shadow-md" : ""}`}
+                                className={`relative transition-shadow flex flex-col ${sensor.roomId ? "cursor-pointer hover:shadow-md" : ""}`}
                                 onClick={() => sensor.roomId && handleRoomClick(sensor.roomId)}>
                                 <CardHeader>
                                     <div className="flex items-center justify-between">
@@ -413,17 +458,48 @@ export default function Sensors() {
                                         </Button>
                                     </div>
                                 </CardHeader>
-                                <CardContent className="relative">
-                                    <div className="space-y-1 text-sm text-muted-foreground">
+                                <CardContent className="flex-1 flex flex-col">
+                                    <div className="space-y-1 text-sm text-muted-foreground mb-4">
                                         <p>Référence: {sensor.reference}</p>
                                         <p>Salle: {getRoomName(sensor.roomId)}</p>
                                         {sensor.source && <p>Source: {sensor.source}</p>}
                                     </div>
-                                    {!sensor.roomId && (
-                                        <div className="absolute bottom-0 right-0 pb-4 pr-4">
+                                    <div className="mt-auto pt-4 border-t">
+                                        {!sensor.roomId ? (
                                             <Badge variant="destructive">Salle non-assignée</Badge>
-                                        </div>
-                                    )}
+                                        ) : (
+                                            <div className="flex flex-wrap gap-2">
+                                                {(() => {
+                                                    const room = getRoom(sensor.roomId);
+                                                    if (!room?.status) return null;
+                                                    return (
+                                                        <>
+                                                            {room.status.co2 && (
+                                                                <Badge variant={getStatusBadgeVariant(room.status.co2)}>
+                                                                    CO₂ {getStatusLabel(room.status.co2)}
+                                                                </Badge>
+                                                            )}
+                                                            {room.status.humidity && (
+                                                                <Badge variant={getStatusBadgeVariant(room.status.humidity)}>
+                                                                    H {getStatusLabel(room.status.humidity)}
+                                                                </Badge>
+                                                            )}
+                                                            {room.status.temperature && (
+                                                                <Badge variant={getStatusBadgeVariant(room.status.temperature)}>
+                                                                    T {getStatusLabel(room.status.temperature)}
+                                                                </Badge>
+                                                            )}
+                                                            {room.status.decibel && (
+                                                                <Badge variant={getStatusBadgeVariant(room.status.decibel)}>
+                                                                    dB {getStatusLabel(room.status.decibel)}
+                                                                </Badge>
+                                                            )}
+                                                        </>
+                                                    );
+                                                })()}
+                                            </div>
+                                        )}
+                                    </div>
                                 </CardContent>
                             </Card>
                         ))}

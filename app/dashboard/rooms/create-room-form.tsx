@@ -17,15 +17,15 @@ export default function CreateRoomForm({ onSuccess }: Props) {
         floor: "",
         position: "",
         description: "",
+        type: "" as "ADMIN" | "STUDENT" | "",
         isUsed: false,
         sensorId: "",
+        size: "70",
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const handleChange = (key: keyof typeof form) => (
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-    ) => {
+    const handleChange = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const value = e.target.value;
         if (key === "isUsed") {
             setForm((prev) => ({ ...prev, [key]: (e.target as HTMLInputElement).checked }));
@@ -45,8 +45,10 @@ export default function CreateRoomForm({ onSuccess }: Props) {
                 floor: parseInt(form.floor),
                 position: parseInt(form.position),
                 description: form.description || undefined,
+                type: form.type as "ADMIN" | "STUDENT",
                 isUsed: form.isUsed,
                 sensorId: form.sensorId || null,
+                size: parseInt(form.size) || 70,
             };
 
             const result = await CreateRoomAction(payload);
@@ -63,8 +65,10 @@ export default function CreateRoomForm({ onSuccess }: Props) {
                 floor: "",
                 position: "",
                 description: "",
+                type: "" as "ADMIN" | "STUDENT" | "",
                 isUsed: false,
                 sensorId: "",
+                size: "70",
             });
 
             // Fermer le sheet après succès
@@ -78,21 +82,12 @@ export default function CreateRoomForm({ onSuccess }: Props) {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-5 px-1">
-            
             {/* Name */}
             <div className="space-y-2">
                 <Label htmlFor="name">
                     Nom de la pièce <span className="text-destructive">*</span>
                 </Label>
-                <Input
-                    id="name"
-                    name="name"
-                    type="text"
-                    value={form.name}
-                    onChange={handleChange("name")}
-                    required
-                    placeholder="Nom de la pièce"
-                />
+                <Input id="name" name="name" type="text" value={form.name} onChange={handleChange("name")} required placeholder="Nom de la pièce" />
             </div>
 
             {/* Floor */}
@@ -110,10 +105,9 @@ export default function CreateRoomForm({ onSuccess }: Props) {
                         "h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs",
                         "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none",
                         "disabled:cursor-not-allowed disabled:opacity-50"
-                    )}
-                >
+                    )}>
                     <option value="">Sélectionner un étage</option>
-                    {[0, 1, 2, 3, 4, 5].map((floor) => (
+                    {[0, 1, 2, 3, 4, 5, 6].map((floor) => (
                         <option key={floor} value={floor}>
                             Étage {floor}
                         </option>
@@ -136,8 +130,7 @@ export default function CreateRoomForm({ onSuccess }: Props) {
                         "h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs",
                         "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none",
                         "disabled:cursor-not-allowed disabled:opacity-50"
-                    )}
-                >
+                    )}>
                     <option value="">Sélectionner une position</option>
                     {[1, 2, 3, 4, 5].map((position) => (
                         <option key={position} value={position}>
@@ -165,6 +158,36 @@ export default function CreateRoomForm({ onSuccess }: Props) {
                         "resize-none"
                     )}
                 />
+            </div>
+
+            {/* Type */}
+            <div className="space-y-2">
+                <Label htmlFor="type">
+                    Type de salle <span className="text-destructive">*</span>
+                </Label>
+                <select
+                    id="type"
+                    name="type"
+                    value={form.type}
+                    onChange={handleChange("type")}
+                    required
+                    className={cn(
+                        "h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs",
+                        "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none",
+                        "disabled:cursor-not-allowed disabled:opacity-50"
+                    )}>
+                    <option value="">Sélectionner un type</option>
+                    <option value="ADMIN">Administration</option>
+                    <option value="STUDENT">Étudiant</option>
+                </select>
+            </div>
+
+            {/* Size */}
+            <div className="space-y-2">
+                <Label htmlFor="size">
+                    Taille (m²) <span className="text-destructive">*</span>
+                </Label>
+                <Input id="size" name="size" type="number" min="1" value={form.size} onChange={handleChange("size")} required placeholder="70" />
             </div>
 
             {/* Sensor ID */}

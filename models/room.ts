@@ -6,7 +6,7 @@ const RoomSchema = new Schema(
         name: String,
         floor: {
             type: Number,
-            enum: [0, 1, 2, 3, 4, 5],
+            enum: [0, 1, 2, 3, 4, 5, 6],
         },
         position: {
             type: Number,
@@ -40,8 +40,45 @@ const RoomSchema = new Schema(
                 temperature: 0,
             },
         },
+        status: {
+            _id: false,
+            co2: {
+                type: String,
+                enum: ["REALLY_GOOD", "GOOD", "BAD", "REALLY_BAD"],
+                required: false,
+                default: null,
+            },
+            decibel: {
+                type: String,
+                enum: ["REALLY_GOOD", "GOOD", "BAD", "REALLY_BAD"],
+                required: false,
+                default: null,
+            },
+            humidity: {
+                type: String,
+                enum: ["REALLY_GOOD", "GOOD", "BAD", "REALLY_BAD"],
+                required: false,
+                default: null,
+            },
+            temperature: {
+                type: String,
+                enum: ["REALLY_GOOD", "GOOD", "BAD", "REALLY_BAD"],
+                required: false,
+                default: null,
+            },
+        },
+        type: {
+            type: String,
+            enum: ["ADMIN", "STUDENT"],
+            required: true,
+        }, 
         isUsed: Boolean,
         sensorId: String || null,
+        size: {
+            type: Number,
+            required: true,
+            default: 70,
+        },
         comfortLevel: {
             type: String,
             enum: ["REALLY_GOOD", "GOOD", "BAD", "REALLY_BAD"],
