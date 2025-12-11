@@ -30,6 +30,7 @@ export async function POST(request: Request) {
         acceptableDecibelNumber: payload?.sound?.acceptableDecibelNumber,
         unit: payload?.sound?.unit || "dB",
       },
+      co2: payload?.co2,
       refreshAt: new Date(),
       sensorId: payload?.sensorId ? new Types.ObjectId(payload.sensorId) : undefined,
       comfortLevel: payload?.comfortLevel,

@@ -5,6 +5,7 @@ import { CreateAccountValition } from "@/utils/validations/create-account.valida
 import Account from "@/models/account";
 import { CreateAccountPayload } from "@/utils/types/account";
 import bcrypt from "bcryptjs";
+import { cookies } from "next/headers";
 
 export async function CreateAccountAction(payload: CreateAccountPayload) {
     const validation = CreateAccountValition.safeParse(payload);
@@ -31,10 +32,21 @@ export async function CreateAccountAction(payload: CreateAccountPayload) {
         const createdJson = createdDoc.toJSON({ versionKey: false });
         const created = { ...createdJson, _id: createdDoc._id.toString() };
 
+        const cookieStore = await cookies();
+
+        const { password, ...accountWithoutPassword } = created;
+
+        cookieStore.set("account", JSON.stringify(accountWithoutPassword), {
+            httpOnly: true,
+            secure: process.env.NEXT_PUBLIC_APP_ENV === "production",
+            sameSite: "lax",
+            maxAge: 60 * 60 * 24 * 7,
+        });
+
         return {
             success: true,
             data: created,
-            pahtParams: "/dashboard"
+            pahtParams: "/dashboard",
         };
     } catch (error) {
         console.error("[CreateAccountAction] error creating account", error);

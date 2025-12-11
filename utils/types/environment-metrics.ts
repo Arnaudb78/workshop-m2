@@ -41,6 +41,7 @@ export type EnvironmentMetricsType = {
     acceptableDecibelNumber?: number;
     unit?: SoundUnit;
   };
+  co2?: string;
   refreshAt?: Date | string;
   sensorId?: string;
   comfortLevel?: ComfortLevel;

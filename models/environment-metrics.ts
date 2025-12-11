@@ -25,6 +25,7 @@ const EnvironmentMetricsSchema = new Schema({
             enum: ["dB", "dBA", "dBC", "dBSPL"],
         },
     },
+    co2: String,
     refreshAt: { type: Date, default: Date.now },
     sensorId: Schema.ObjectId,
     comfortLevel: {

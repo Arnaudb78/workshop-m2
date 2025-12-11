@@ -7,81 +7,88 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LoginAction } from "@/app/actions/login.action";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [form, setForm] = useState({ mail: "", password: "" });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
+    const [form, setForm] = useState({ mail: "", password: "" });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-  const handleChange =
-    (key: keyof typeof form) =>
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setForm((prev) => ({ ...prev, [key]: event.target.value }));
+    const handleChange = (key: keyof typeof form) => (event: React.ChangeEvent<HTMLInputElement>) => {
+        setForm((prev) => ({ ...prev, [key]: event.target.value }));
     };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setError(null);
-    setLoading(true);
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        setError(null);
+        setLoading(true);
 
-    try {
-      // TODO: brancher l'API d'authentification ici
-      // const res = await signIn(form.mail, form.password);
-      // if (!res.ok) throw new Error("Identifiants invalides");
-      router.push("/dashboard");
-    } catch (err) {
-      const message = (err as Error).message || "Connexion impossible";
-      setError(message);
-    } finally {
-      setLoading(false);
-    }
-  };
+        try {
+            const result = await LoginAction({
+                mail: form.mail,
+                password: form.password,
+            });
 
-  return (
-    <div className="mx-auto flex w-full max-w-md p-4">
-      <Card className="w-full">
-        <CardHeader className="pb-0">
-          <CardTitle>Connexion</CardTitle>
-          <CardDescription>Accède à ton espace sécurisé.</CardDescription>
-        </CardHeader>
+            if (result.success === false) {
+                setError(result.message || "Erreur lors de la connexion.");
+                setLoading(false);
+                return;
+            }
 
-        <CardContent className="pb-6 pt-4">
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="mail">Mail</Label>
-              <Input
-                id="mail"
-                name="mail"
-                type="email"
-                value={form.mail}
-                onChange={handleChange("mail")}
-                placeholder="johndoe@gmail.com"
-                required
-              />
-            </div>
+            router.push("/dashboard");
+        } catch (err) {
+            console.error("[LoginPage] error", err);
+            const message = (err as Error).message || "Connexion impossible";
+            setError(message);
+            setLoading(false);
+        }
+    };
 
-            <div className="grid gap-2">
-              <Label htmlFor="password">Mot de passe</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                value={form.password}
-                onChange={handleChange("password")}
-                placeholder="••••••••"
-                required
-              />
-            </div>
+    return (
+        <div className="mx-auto flex w-full max-w-md p-4">
+            <Card className="w-full">
+                <CardHeader className="pb-0">
+                    <CardTitle>Connexion</CardTitle>
+                    <CardDescription>Accède à ton espace sécurisé.</CardDescription>
+                </CardHeader>
 
-            {error && <p className="text-sm text-destructive">{error}</p>}
+                <CardContent className="pb-6 pt-4">
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="mail">Mail</Label>
+                            <Input
+                                id="mail"
+                                name="mail"
+                                type="email"
+                                value={form.mail}
+                                onChange={handleChange("mail")}
+                                placeholder="johndoe@gmail.com"
+                                required
+                            />
+                        </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Connexion..." : "Se connecter"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
-  );
+                        <div className="grid gap-2">
+                            <Label htmlFor="password">Mot de passe</Label>
+                            <Input
+                                id="password"
+                                name="password"
+                                type="password"
+                                value={form.password}
+                                onChange={handleChange("password")}
+                                placeholder="••••••••"
+                                required
+                            />
+                        </div>
+
+                        {error && <p className="text-sm text-destructive">{error}</p>}
+
+                        <Button type="submit" className="w-full" disabled={loading}>
+                            {loading ? "Connexion..." : "Se connecter"}
+                        </Button>
+                    </form>
+                </CardContent>
+            </Card>
+        </div>
+    );
 }
