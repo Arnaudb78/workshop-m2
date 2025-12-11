@@ -7,13 +7,24 @@
  * 1. Contacte /api/add-sensor en boucle jusqu'à recevoir isReady: true
  * 2. Une fois prêt, envoie des métriques toutes les 30 secondes via /api/add-metrics
  * 
- * Usage: node scripts/simulate-sensor.js [sensorRef] [apiUrl]
- * Exemple: node scripts/simulate-sensor.js SENSOR-001 http://localhost:3000
+ * Usage: node scripts/simulate-sensor.js <sensorRef> [roomId] [apiUrl]
+ * Exemples:
+ *   node scripts/simulate-sensor.js SENSOR-001
+ *   node scripts/simulate-sensor.js SENSOR-001 507f1f77bcf86cd799439011
+ *   node scripts/simulate-sensor.js SENSOR-001 507f1f77bcf86cd799439011 http://localhost:3000
+ * 
+ * Paramètres:
+ *   sensorRef (requis): Référence du capteur (ex: SENSOR-001)
+ *   roomId (optionnel): ID de la room à assigner au capteur
+ *   apiUrl (optionnel): URL de l'API (défaut: http://localhost:3000)
  */
 
-const API_URL = process.env.API_URL || process.argv[3] || "http://localhost:3000";
-const SENSOR_REF = process.argv[2] || `SENSOR-${Date.now()}`; // automatic 
-// const SENSOR_REF = "SENSOR-1765466256599";
+// Parsing des arguments
+const args = process.argv.slice(2);
+const SENSOR_REF = args[0] || `SENSOR-${Date.now()}`;
+const ROOM_ID = args[1] && !args[1].startsWith("http") ? args[1] : null;
+const API_URL = process.env.API_URL || (args[1] && args[1].startsWith("http") ? args[1] : args[2]) || "http://localhost:3000";
+
 const CHECK_INTERVAL = 5000; // Vérifier toutes les 5 secondes si le capteur est prêt
 const METRICS_INTERVAL = 30000; // Envoyer des métriques toutes les 30 secondes
 
@@ -50,6 +61,63 @@ function generateMetrics(sensorRef) {
         },
         luminos: Math.floor(baseLuminos),
     };
+}
+
+/**
+ * Assigne le capteur à une room si roomId est fourni
+ */
+async function assignSensorToRoom() {
+    if (!ROOM_ID) {
+        return false;
+    }
+
+    try {
+        // D'abord, s'assurer que le capteur existe en appelant /api/add-sensor
+        await fetch(`${API_URL}/api/add-sensor`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                payload: {
+                    sensorRef: SENSOR_REF,
+                },
+            }),
+        });
+
+        // Attendre un peu pour que le capteur soit créé si nécessaire
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        // Assigner le capteur à la room via l'API PATCH
+        const response = await fetch(`${API_URL}/api/sensors`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                sensorRef: SENSOR_REF,
+                roomId: ROOM_ID,
+            }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            console.error(`❌ Erreur lors de l'assignation: ${response.status}`, errorData);
+            return false;
+        }
+
+        const data = await response.json();
+        if (data.success) {
+            console.log(`✅ Capteur "${SENSOR_REF}" assigné à la room ${ROOM_ID}`);
+            return true;
+        } else {
+            console.error(`❌ Erreur lors de l'assignation:`, data.error);
+            return false;
+        }
+    } catch (error) {
+        console.error(`❌ Erreur lors de l'assignation du capteur:`, error.message);
+        return false;
+    }
 }
 
 /**
@@ -183,9 +251,38 @@ process.on("SIGTERM", cleanup);
 console.log("🚀 Démarrage du simulateur de capteur...");
 console.log(`📡 API URL: ${API_URL}`);
 console.log(`🔖 Sensor Reference: ${SENSOR_REF}`);
+if (ROOM_ID) {
+    console.log(`🏠 Room ID: ${ROOM_ID}`);
+} else {
+    console.log(`🏠 Room ID: Non spécifié (le capteur sera assigné manuellement)`);
+}
 console.log(`⏹️  Appuyez sur Ctrl+C pour arrêter\n`);
 
-startSensorCheck().catch((error) => {
-    console.error("❌ Erreur fatale:", error);
-    cleanup();
-});
+if (ROOM_ID) {
+    assignSensorToRoom().then(() => {
+        startSensorCheck().catch((error) => {
+            console.error("❌ Erreur fatale:", error);
+            cleanup();
+        });
+    });
+} else {
+    startSensorCheck().catch((error) => {
+        console.error("❌ Erreur fatale:", error);
+        cleanup();
+    });
+}
+
+/**
+ * 
+# Terminal 1
+node scripts/simulate-sensor.js SENSOR-001 507f1f77bcf86cd799439011
+
+# Terminal 2
+node scripts/simulate-sensor.js SENSOR-002 507f1f77bcf86cd799439012
+
+# Terminal 3
+node scripts/simulate-sensor.js SENSOR-003 507f1f77bcf86cd799439013
+
+# Terminal 4
+node scripts/simulate-sensor.js SENSOR-004 507f1f77bcf86cd799439014
+ */

@@ -9,7 +9,7 @@ export default async function DashboardLayout({
 }) {
     const account = await getAccountFromCookie();
     if (!account) {
-        redirect("/login");
+        redirect("/");
     }
 
     if (account.accessLevel === "STUDENT") {

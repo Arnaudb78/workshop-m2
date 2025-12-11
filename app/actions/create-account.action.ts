@@ -21,7 +21,6 @@ export async function CreateAccountAction(payload: CreateAccountActionPayload) {
         };
     }
 
-    // Si création de compte admin, vérifier le code de vérification
     if (payload.accessLevel === AccessLevelEnum.ADMIN) {
         const adminSignupCode = process.env.ADMIN_SIGNUP_VERIFICATION_CODE;
         if (!adminSignupCode) {
@@ -41,6 +40,15 @@ export async function CreateAccountAction(payload: CreateAccountActionPayload) {
 
     try {
         await connectToDatabase();
+
+        // Vérifier si le mail existe déjà
+        const existingAccount = await Account.findOne({ mail: payload.mail });
+        if (existingAccount) {
+            return {
+                success: false,
+                message: "Cette adresse email est déjà utilisée.",
+            };
+        }
 
         const hashedPassword = await bcrypt.hash(payload.password, 10);
 

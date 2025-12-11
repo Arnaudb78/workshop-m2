@@ -13,6 +13,10 @@ const SensorSchema = new Schema({
         type: String,
         enum: ["ESP-32", "ESP32-ENV-V2"],
     },
+    isDisabled: {
+        type: Boolean,
+        default: false,
+    }
 });
 
 export default models.Sensor || mongoose.model("Sensor", SensorSchema);
