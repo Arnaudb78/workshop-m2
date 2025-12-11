@@ -69,16 +69,16 @@ export default function Sensors() {
             setLoading(true);
             setError(null);
             const response = await fetch("/api/sensors");
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             const contentType = response.headers.get("content-type");
             if (!contentType || !contentType.includes("application/json")) {
                 throw new Error("La réponse n'est pas du JSON");
             }
-            
+
             const result = await response.json();
 
             if (result.success) {
@@ -97,16 +97,16 @@ export default function Sensors() {
     const fetchRooms = async () => {
         try {
             const response = await fetch("/api/rooms");
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             const contentType = response.headers.get("content-type");
             if (!contentType || !contentType.includes("application/json")) {
                 throw new Error("La réponse n'est pas du JSON");
             }
-            
+
             const result = await response.json();
             if (result.success) {
                 setRooms(result.data || []);
@@ -118,22 +118,25 @@ export default function Sensors() {
 
     const fetchMetrics = async (roomId?: string | null) => {
         try {
-            const url = roomId ? `/api/metrics?roomId=${roomId}&limit=50` : `/api/metrics?limit=50`;
+            // Augmenter la limite pour récupérer plus de données historiques
+            const url = roomId ? `/api/metrics?roomId=${roomId}&limit=200` : `/api/metrics?limit=200`;
             const response = await fetch(url);
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             const contentType = response.headers.get("content-type");
             if (!contentType || !contentType.includes("application/json")) {
                 throw new Error("La réponse n'est pas du JSON");
             }
-            
+
             const result = await response.json();
 
             if (result.success) {
-                setMetrics(result.data || []);
+                const newMetrics = result.data || [];
+                console.log(`[Sensors] Récupéré ${newMetrics.length} métriques pour la salle ${roomId || "globale"}`);
+                setMetrics(newMetrics);
             }
         } catch (err) {
             console.error("[Sensors] error fetching metrics", err);
@@ -143,11 +146,21 @@ export default function Sensors() {
     useEffect(() => {
         fetchSensors();
         fetchRooms();
-        fetchMetrics();
     }, []);
 
     useEffect(() => {
         fetchMetrics(selectedRoom);
+    }, [selectedRoom]);
+
+    // Rafraîchir les métriques toutes les 30 secondes quand une salle est sélectionnée
+    useEffect(() => {
+        if (!selectedRoom) return;
+
+        const interval = setInterval(() => {
+            fetchMetrics(selectedRoom);
+        }, 30000); // 30 secondes
+
+        return () => clearInterval(interval);
     }, [selectedRoom]);
 
     const getRoomName = (roomId: string | null | undefined) => {
@@ -161,6 +174,10 @@ export default function Sensors() {
 
     // Préparer les données pour les graphiques avec un espacement de 2 minutes
     const prepareChartData = (data: EnvironmentMetric[], metricType: "temperature" | "humidity" | "co2" | "sound") => {
+        if (!data || data.length === 0) {
+            return { labels: [], values: [], sensorRefs: [] };
+        }
+
         const sortedData = [...data].sort((a, b) => {
             const dateA = a.refreshAt ? new Date(a.refreshAt).getTime() : 0;
             const dateB = b.refreshAt ? new Date(b.refreshAt).getTime() : 0;
@@ -174,12 +191,39 @@ export default function Sensors() {
         sortedData.forEach((m) => {
             if (!m.refreshAt) return;
             const timestamp = new Date(m.refreshAt).getTime();
-            
+
+            // Toujours ajouter le premier point, puis filtrer selon l'intervalle
             if (lastTimestamp === null || timestamp - lastTimestamp >= TWO_MINUTES_MS) {
                 filteredData.push(m);
                 lastTimestamp = timestamp;
             }
         });
+
+        // Si après filtrage on n'a qu'un seul point mais qu'on a plusieurs données,
+        // réduire l'intervalle de filtrage ou prendre un échantillonnage
+        if (filteredData.length <= 1 && sortedData.length > 1) {
+            // Si toutes les données sont dans une fenêtre de moins de 2 minutes,
+            // échantillonner pour avoir au moins quelques points visibles
+            const maxPoints = Math.min(20, sortedData.length);
+            const step = Math.max(1, Math.floor(sortedData.length / maxPoints));
+            const sampledData: EnvironmentMetric[] = [];
+
+            for (let i = 0; i < sortedData.length; i += step) {
+                sampledData.push(sortedData[i]);
+            }
+
+            // S'assurer d'inclure le dernier point
+            if (sortedData.length > 0) {
+                const lastPoint = sortedData[sortedData.length - 1];
+                if (sampledData.length === 0 || sampledData[sampledData.length - 1]._id !== lastPoint._id) {
+                    sampledData.push(lastPoint);
+                }
+            }
+
+            filteredData.length = 0;
+            filteredData.push(...sampledData);
+            console.log(`[prepareChartData] Données échantillonnées: ${sortedData.length} → ${filteredData.length} points`);
+        }
 
         const labels = filteredData.map((m) => {
             if (!m.refreshAt) return "";
@@ -286,6 +330,7 @@ export default function Sensors() {
     };
 
     const handleRoomClick = (roomId: string | null) => {
+        if (!roomId) return; // Ne pas ouvrir le drawer si pas de roomId
         setSelectedRoom(roomId);
         setDrawerOpen(true);
     };
@@ -293,22 +338,8 @@ export default function Sensors() {
     return (
         <div>
             <div className="mb-6">
-                <div className="flex items-center justify-between mb-2">
-                    <h1 className="text-2xl font-semibold">Capteurs et Métriques</h1>
-                    <div className="flex gap-2">
-                        <Button
-                            variant={selectedRoom === null ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => {
-                                setSelectedRoom(null);
-                                setDrawerOpen(false);
-                            }}
-                        >
-                            Vue globale
-                        </Button>
-                    </div>
-                </div>
-                <p className="text-sm text-muted-foreground">Visualisez les métriques environnementales de vos capteurs.</p>
+                <h1 className="text-2xl font-semibold mb-2">Capteurs et Métriques</h1>
+                <p className="text-sm text-muted-foreground">Visualisez les métriques environnementales de vos capteurs par salle.</p>
             </div>
 
             {/* Liste de tous les capteurs */}
@@ -347,8 +378,7 @@ export default function Sensors() {
                             <Card
                                 key={sensor._id}
                                 className={`relative transition-shadow ${sensor.roomId ? "cursor-pointer hover:shadow-md" : ""}`}
-                                onClick={() => sensor.roomId && handleRoomClick(sensor.roomId)}
-                            >
+                                onClick={() => sensor.roomId && handleRoomClick(sensor.roomId)}>
                                 <CardHeader>
                                     <CardTitle>{sensor.name || sensor.reference}</CardTitle>
                                 </CardHeader>
@@ -370,56 +400,14 @@ export default function Sensors() {
                 )}
             </div>
 
-            {/* Graphiques des métriques */}
-            {selectedRoom === null && metrics.length > 0 && (
-                <div className="space-y-6">
-                    <h2 className="text-lg font-semibold">Métriques globales</h2>
-                    <div className="grid gap-6 md:grid-cols-2">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Température</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <Line data={temperatureChartData} options={chartOptions} />
-                            </CardContent>
-                        </Card>
-
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Humidité</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <Line data={humidityChartData} options={chartOptions} />
-                            </CardContent>
-                        </Card>
-
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>CO2</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <Line data={co2ChartData} options={chartOptions} />
-                            </CardContent>
-                        </Card>
-
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Son (Décibels)</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <Line data={soundChartData} options={chartOptions} />
-                            </CardContent>
-                        </Card>
-                    </div>
-                </div>
-            )}
-
             {/* Drawer pour les détails d'une salle */}
             <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} direction="bottom">
                 <DrawerContent className="max-h-[85vh]">
                     <DrawerHeader>
                         <DrawerTitle>{selectedRoom ? getRoomName(selectedRoom) : "Vue globale"}</DrawerTitle>
-                        <DrawerDescription>Métriques détaillées pour cette salle</DrawerDescription>
+                        <DrawerDescription>
+                            {selectedRoom ? `Métriques détaillées pour ${getRoomName(selectedRoom)}` : "Métriques globales de toutes les salles"}
+                        </DrawerDescription>
                     </DrawerHeader>
                     <div className="overflow-y-auto px-4 pb-4">
                         {metrics.length > 0 ? (
