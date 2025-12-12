@@ -1,0 +1,18 @@
+name: Protected Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  noop:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Say hello
+        run: |
+          echo "Hardening your repo like it's a NASA launch pad..."
+          echo "Scanning commits for alien lifeforms (and bad code)..."
+          echo "Deploying virtual duct tape on any leaky configs..."
+          echo "Mission control says: push safely, astronaut!"
+
