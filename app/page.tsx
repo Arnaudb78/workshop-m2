@@ -244,7 +244,13 @@ export default function Home() {
                         <CardHeader>
                             <div className="flex justify-center mb-4">
                                 <div className="relative size-32 rounded-full bg-muted flex items-center justify-center overflow-hidden">
-                                    <Users className="h-16 w-16 text-muted-foreground" />
+                                    <Image
+                                            src="/jules.png"
+                                            alt="Jules Fakhouri"
+                                            width={128}
+                                            height={128}
+                                            className="w-full h-full object-cover rounded-full"
+                                        />
                                 </div>
                             </div>
                             <CardTitle className="text-xl">Jules Fakhouri</CardTitle>
